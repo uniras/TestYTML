@@ -287,8 +287,8 @@ class YTML:
         return result
 
     def parse_template_variable(self, value: any, flags: dict, pretty: bool, formatter: PrettyFormatter) -> str:
-        # テンプレート変数を解析して変換
-        return re.sub(r'{{\s*(\S+)\s*}}', f'{self.template_variable_start}\\1{self.template_variable_end}', value)
+        # テンプレート変数を解析して変換するが、HTMLは非対応なのでそのまま返す
+        return value
 
     def escape_html(self, value: str, flags: dict, pretty: bool, formatter: PrettyFormatter) -> str:
         # HTMLエスケープ
@@ -411,3 +411,7 @@ class YTMLJinja(YTML):
             flags['convertattr'] = False
         else:
             super().set_tag_type(value, flags, pretty, formatter)
+
+    def parse_template_variable(self, value: any, flags: dict, pretty: bool, formatter: PrettyFormatter) -> str:
+        # テンプレート変数を解析して変換
+        return re.sub(r'{{\s*(\S+)\s*}}', f'{self.template_variable_start}\\1{self.template_variable_end}', value)
