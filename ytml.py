@@ -206,14 +206,14 @@ class YTML:
         elif flags['tagname'] in self.void_tags:
             # HTMLのvoidタグの場合
             flags['isvoid'] = True
-            flags['tagstart'] = self.html_tag_end_self_close
+            flags['tagend'] = self.html_tag_end_self_close
         else:
             # 通常のHTMLタグの場合
-            flags['tagstart'] = self.html_tag_start
+            flags['tagend'] = self.html_tag_end
             flags['closetagstart'] = self.html_tag_end_close
 
         # HTMLタグ共通の設定
-        flags['tagend'] = self.html_tag_end
+        flags['tagstart'] = self.html_tag_start
         flags['starttagname'] = flags['tagname']
         flags['endtagname'] = flags['tagname']
 
@@ -377,7 +377,7 @@ class YTMLJinja(YTML):
         'set': ['set', '', True],
     }
 
-    def set_tag_type(self, flags: dict, pretty: bool, formatter: PrettyFormatter) -> None:
+    def set_tag_type(self, value: any, flags: dict, pretty: bool, formatter: PrettyFormatter) -> None:
         # タグ名に応じて出力動作の設定
         if flags['tagname'] in self.template_tags:
             # テンプレートタグの場合
@@ -402,4 +402,4 @@ class YTMLJinja(YTML):
             flags['useattr'] = self.template_tag_convert[flags['tagname']][2]
             flags['convertattr'] = False
         else:
-            super().set_tag_type(flags, pretty, formatter)
+            super().set_tag_type(value, flags, pretty, formatter)
