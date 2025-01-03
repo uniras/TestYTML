@@ -226,7 +226,7 @@ class YTML:
                 flags['attr'] = re.sub(r'#(\S+)', 'id="\\1"', flags['attr'])
 
             # 属性の先頭にスペースを追加
-            if flags['attrspace']:
+            if flags['attrspace'] and flags['attr'] != '':
                 flags['attr'] = ' ' + flags['attr']
         else:
             # 属性を使用しない場合は空文字列に設定
