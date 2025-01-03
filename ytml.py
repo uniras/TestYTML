@@ -134,8 +134,8 @@ class YTML:
     template_tag_self_close = ''
 
     # テンプレート変数の開始・終了文字列
-    template_variable_start = ''
-    template_variable_end = ''
+    template_variable_start = '{{ '
+    template_variable_end = ' }}'
 
     def init_flags(self):
         # フラグの初期化
@@ -265,10 +265,10 @@ class YTML:
             formatter.add_indent([pretty, flags['useindent'], flags['usestart']])
             result += self.obj_to_html(value, pretty, formatter.indent_len, formatter)
         elif isinstance(value, str):
-            # 値が文字列の場合はテンプレート変数を解析して追加
-            value = re.sub(r'{{\s*(\S+)\s*}}', f'{self.template_variable_start}\\1{self.template_variable_end}', value)
+            # テンプレート変数を解析して変換
+            value = self.parse_template_variable(value, flags, pretty, formatter)
             # HTMLエスケープ
-            value = value.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
+            value = self.escape_html(value, flags, pretty, formatter)
             # 半角スペース2つと改行が連続している場合はbrタグに変換(Markdownの仕様に準拠)
             value = re.sub(r'  \n', '<br/>\n', value)
             if value.find('\n') >= 0:
@@ -285,6 +285,14 @@ class YTML:
             raise ValueError('value must be a list or a string')
 
         return result
+
+    def parse_template_variable(self, value: any, flags: dict, pretty: bool, formatter: PrettyFormatter) -> str:
+        # テンプレート変数を解析して変換
+        return re.sub(r'{{\s*(\S+)\s*}}', f'{self.template_variable_start}\\1{self.template_variable_end}', value)
+
+    def escape_html(self, value: str, flags: dict, pretty: bool, formatter: PrettyFormatter) -> str:
+        # HTMLエスケープ
+        return value.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
 
     def output_endtag(self, value: any, flags: dict, pretty: bool, formatter: PrettyFormatter) -> str:
         # 終了タグを出力
